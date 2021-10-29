@@ -3,17 +3,23 @@ import Main from "./Main";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
 import {useState, useEffect, useCallback} from "react";
+import { Route } from 'react-router-dom';
+
 import ImagePopup from "./ImagePopup";
 import {api} from "../utils/Api";
 import {CurrentUserContext} from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
+import Login from "./Login"
+import Register from "./Register";
+import InfoTooltip from "./InfoTooltip";
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false)
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false)
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false)
+  const [isInfoTooltip, setIsInfoTooltip] = useState(false)
   const [selectedCard, setSelectedCard] = useState({})
   const [currentUser, setCurrentUser] = useState({
     name: "loading...",
@@ -94,6 +100,10 @@ function App() {
     setSelectedCard({})
   },[setSelectedCard])
 
+  const handleInfoTooltipClose = useCallback(() => {
+    setIsInfoTooltip(false)
+  },[setIsInfoTooltip])
+
   /*спасибо по catch finally спустя столько ревью выплыло ))*/
   /*закрытие и ресет внутри then и правда поюзерфрендли будет*/
   const handleUpdateUser = (name, about, processing) => {
@@ -150,9 +160,17 @@ function App() {
       <CurrentUserContext.Provider value={currentUser}>
         <div className="page">
           <Header/>
+          <Route exact path="/">
           <Main onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick}
                 onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick}
                 cardsData={cardsData} onCardLike={handleCardLike} onCardDelete={handleCardDelete}/>
+          </Route>
+          <Route path="/sign-up">
+            <Register/>
+          </Route>
+          <Route path="/sign-in">
+            <Login/>
+          </Route>
           <Footer/>
         </div>
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={handleEditProfileClose}
@@ -163,6 +181,7 @@ function App() {
                        onAddPlace={handleAddPlaceSubmit}/>
         <PopupWithForm title='Вы уверены?' name='confirmation' submitText='Да'/>
         <ImagePopup card={selectedCard} onClose={handleImagePopupClose}/>
+        <InfoTooltip isOpen={isInfoTooltip} onClose={handleInfoTooltipClose}/>
       </CurrentUserContext.Provider>
   );
 }

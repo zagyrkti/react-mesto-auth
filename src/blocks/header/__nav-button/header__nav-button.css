@@ -1,0 +1,17 @@
+.header__nav-button {
+  padding: 0;
+  margin: 0 0 0 24px;
+  background-color: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 550px) {
+  .header__nav-button {
+    margin: 19px 0 0 0;
+  }
+}

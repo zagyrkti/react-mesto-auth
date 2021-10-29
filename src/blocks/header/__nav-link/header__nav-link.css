@@ -1,0 +1,15 @@
+.header__nav-link {
+  margin: 0 0 0 24px;
+
+  color: #ffffff;
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+@media screen and (max-width: 550px) {
+  .header__nav-link {
+    margin: 0;
+  }
+}

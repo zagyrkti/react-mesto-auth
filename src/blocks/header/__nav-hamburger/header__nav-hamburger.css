@@ -1,0 +1,19 @@
+.header__nav-hamburger {
+  display: none;
+  margin: 0 30px 0 0;
+  width: 24px;
+  height: 21px;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  color: #ffffff;
+  grid-area: hamburger;
+  justify-self: end;
+  align-self: end;
+}
+
+@media screen and (max-width: 550px) {
+  .header__nav-hamburger {
+    display: flex;
+  }
+}
