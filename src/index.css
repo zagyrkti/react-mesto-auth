@@ -12,6 +12,8 @@
 @import "./blocks/header/__nav-button/header__nav-button.css";
 @import "./blocks/header/__nav-link/header__nav-link.css";
 @import "./blocks/header/__nav-hamburger/header__nav-hamburger.css";
+@import "./blocks/header/__user-menu/header__user-menu.css";
+@import "./blocks/header/__nav-button/_type/header__nav-button_type_secondary.css";
 /*-----------------profile-----------------*/
 @import "./blocks/profile/profile.css";
 @import "./blocks/profile/__avatar/profile__avatar.css";

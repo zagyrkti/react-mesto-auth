@@ -44,7 +44,14 @@ const options = {
   headers: {
     authorization: "29656b2d-ee52-401a-a717-4267ea0b7d96",
     'Content-Type': 'application/json',
-  }
+  },
+  headersAuth: {
+    'Content-Type': 'application/json',
+  },
+  regUrl: "https://auth.nomoreparties.co/signup",
+  singInUrl: "https://auth.nomoreparties.co/signin",
+  checkTokenUrl: "https://auth.nomoreparties.co/users/me",
+
 }
 
 /*------------------------------------*/

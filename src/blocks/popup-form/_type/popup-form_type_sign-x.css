@@ -1,0 +1,13 @@
+.popup-form_type_sign-x {
+  margin: 26px auto 0 auto;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+@media screen and (max-width: 545px) {
+  .popup-form_type_sign-x {
+    padding: 14px 12px 37px 12px;
+
+  }
+}
+

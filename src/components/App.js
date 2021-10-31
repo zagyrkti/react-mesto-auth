@@ -1,10 +1,9 @@
+import {useState, useEffect, useCallback} from "react";
+import {Route, Switch, useHistory} from 'react-router-dom';
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
-import {useState, useEffect, useCallback} from "react";
-import { Route } from 'react-router-dom';
-
 import ImagePopup from "./ImagePopup";
 import {api} from "../utils/Api";
 import {CurrentUserContext} from "../contexts/CurrentUserContext";
@@ -14,13 +13,18 @@ import AddPlacePopup from "./AddPlacePopup";
 import Login from "./Login"
 import Register from "./Register";
 import InfoTooltip from "./InfoTooltip";
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
+  /*popup status*/
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false)
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false)
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false)
-  const [isInfoTooltip, setIsInfoTooltip] = useState(false)
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false)
+  /*cards*/
+  const [cardsData, setCardsData] = useState([])
   const [selectedCard, setSelectedCard] = useState({})
+  /*user*/
   const [currentUser, setCurrentUser] = useState({
     name: "loading...",
     about: "loading...",
@@ -28,9 +32,16 @@ function App() {
     _id: "",
     cohort: ""
   })
+  /*auth*/
+  const [isSignXSuccessful, setIsSignXSuccessful] = useState(true)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [email, setEmail] = useState("")
+  /*aux*/
+  const history = useHistory();
 
-  const [cardsData, setCardsData] = useState([])
+  /*------------handlers------------*/
 
+  /*------click on card handlers------*/
   function handleCardLike(currentCard) {
     const isLiked = currentCard.likes.some(i => i._id === currentUser._id);
 
@@ -49,23 +60,6 @@ function App() {
         .catch(console.log)
   }
 
-  useEffect(() => {
-    api.getCards()
-        .then((cardsData) => {
-          setCardsData(cardsData)
-        })
-        .catch(console.log)
-  }, [])
-
-
-  useEffect(() => {
-    api.getUser()
-        .then((userData) => {
-          setCurrentUser(userData)
-        })
-        .catch(console.log)
-  }, [])
-
   const handleEditAvatarClick = () => {
     setIsEditAvatarPopupOpen(true)
   }
@@ -78,15 +72,17 @@ function App() {
     setIsAddPlacePopupOpen(true)
   }
 
+  /*------aux handlers------*/
+
   const handleCardClick = (cardData) => {
     setSelectedCard(cardData)
   }
 
-  /*подумывал сделать через хaндлеры но не хотелось лишнего городить
-    но если поприкидывать действительно самый адекватный вариант*/
+  /*------close handlers------*/
+
   const handleEditProfileClose = useCallback(() => {
     setIsEditProfilePopupOpen(false)
-  },[setIsEditProfilePopupOpen])
+  }, [setIsEditProfilePopupOpen])
 
   const handleEditAvatarClose = useCallback(() => {
     setIsEditAvatarPopupOpen(false)
@@ -98,14 +94,14 @@ function App() {
 
   const handleImagePopupClose = useCallback(() => {
     setSelectedCard({})
-  },[setSelectedCard])
+  }, [setSelectedCard])
 
   const handleInfoTooltipClose = useCallback(() => {
-    setIsInfoTooltip(false)
-  },[setIsInfoTooltip])
+    setIsInfoTooltipOpen(false)
+  }, [setIsInfoTooltipOpen])
 
-  /*спасибо по catch finally спустя столько ревью выплыло ))*/
-  /*закрытие и ресет внутри then и правда поюзерфрендли будет*/
+  /*------api handlers------*/
+
   const handleUpdateUser = (name, about, processing) => {
     processing(true);
     api.setUser(name, about)
@@ -147,6 +143,80 @@ function App() {
         })
   }
 
+  const handleRegistration = (email, password, processing, reset) => {
+    processing(true);
+    api.register(email, password)
+        .then(() => {
+          reset()
+          processing(false);
+          setIsSignXSuccessful(true)
+          setIsInfoTooltipOpen(true)
+          history.push("sign-in")
+        })
+        .catch((err) => {
+          console.log(err);
+          processing(false);
+          setIsSignXSuccessful(false)
+          setIsInfoTooltipOpen(true)
+        })
+  }
+
+  const handleLogIn = (email, password, processing, reset) => {
+    processing(true);
+    api.signIn(email, password)
+        .then((data) => {
+          reset()
+          setEmail(email)
+          processing(false);
+          setIsLoggedIn(true)
+          history.push("/")
+          localStorage.setItem("token", data.token)
+        })
+        .catch((err) => {
+          console.log(err);
+          processing(false);
+          setIsSignXSuccessful(false)
+          setIsInfoTooltipOpen(true)
+        })
+  }
+
+  const handleLogOut = () => {
+    setIsLoggedIn(false)
+    localStorage.removeItem("token");
+    history.push("/sign-in")
+  }
+
+  /*------------useEffects------------*/
+
+  useEffect(() => {
+    api.getCards()
+        .then((cardsData) => {
+          setCardsData(cardsData)
+        })
+        .catch(console.log)
+  }, [])
+
+
+  useEffect(() => {
+    api.getUser()
+        .then((userData) => {
+          setCurrentUser(userData)
+        })
+        .catch(console.log)
+  }, [])
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      api.checkToken(localStorage.getItem("token"))
+          .then((data) => {
+            setIsLoggedIn(true)
+            setEmail(data.data.email)
+            history.push("/");
+          })
+          .catch(console.log)
+    }
+  }, [history])
+
   /*Вызывать все сеттеры чтобы закрыть один конкретный попап это какое-то дно
     изначально сделал через передачу сеттера, после ревью переделал на хандлеры*/
   /*  const closeAllPopups = () => {
@@ -159,18 +229,22 @@ function App() {
   return (
       <CurrentUserContext.Provider value={currentUser}>
         <div className="page">
-          <Header/>
-          <Route exact path="/">
-          <Main onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick}
-                onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick}
-                cardsData={cardsData} onCardLike={handleCardLike} onCardDelete={handleCardDelete}/>
-          </Route>
-          <Route path="/sign-up">
-            <Register/>
-          </Route>
-          <Route path="/sign-in">
-            <Login/>
-          </Route>
+          <Header onLogOut={handleLogOut} email={email} loggedIn={isLoggedIn}/>
+          <Switch>
+            <ProtectedRoute component={Main} exact path="/"
+                            loggedIn={isLoggedIn}
+                            onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick}
+                            onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick}
+                            cardsData={cardsData} onCardLike={handleCardLike} onCardDelete={handleCardDelete}>
+            </ProtectedRoute>
+            <Route path="/sign-up">
+              <Register onRegistration={handleRegistration}/>
+            </Route>
+            <Route path="/sign-in">
+              <Login onLogin={handleLogIn}/>
+            </Route>
+
+          </Switch>
           <Footer/>
         </div>
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={handleEditProfileClose}
@@ -181,7 +255,7 @@ function App() {
                        onAddPlace={handleAddPlaceSubmit}/>
         <PopupWithForm title='Вы уверены?' name='confirmation' submitText='Да'/>
         <ImagePopup card={selectedCard} onClose={handleImagePopupClose}/>
-        <InfoTooltip isOpen={isInfoTooltip} onClose={handleInfoTooltipClose}/>
+        <InfoTooltip isOpen={isInfoTooltipOpen} onClose={handleInfoTooltipClose} regStatus={isSignXSuccessful}/>
       </CurrentUserContext.Provider>
   );
 }

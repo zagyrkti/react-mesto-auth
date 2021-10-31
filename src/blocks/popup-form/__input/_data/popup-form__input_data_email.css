@@ -3,3 +3,10 @@
   color: #FFFFFF;
   border-bottom: 1px solid #CCCCCC;;
 }
+
+@media screen and (max-width: 545px) {
+  .popup-form__input_data_email {
+    margin: 45px 0 0 0;
+
+  }
+}

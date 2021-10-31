@@ -2,7 +2,6 @@
   justify-self: flex-end;
   align-items: center;
   margin: 8px 0 0 0;
-  grid-area: navigation;
 }
 
 @media screen and (max-width: 550px) {

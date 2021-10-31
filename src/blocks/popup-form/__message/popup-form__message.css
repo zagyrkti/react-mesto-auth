@@ -1,7 +1,10 @@
 .popup-form__message {
+  margin: 15px 0 0 0;
   font-size: 14px;
   font-weight: 400;
   line-height: 17px;
   text-align: center;
   color: #ffffff;
+  display: block;
+  text-decoration: none;
 }

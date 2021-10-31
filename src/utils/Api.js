@@ -8,6 +8,10 @@ class Api {
     this._headers = options.headers;
     this._avatar = options.avatarUrl;
     this._likes = options.likesUrl;
+    this._signUp = options.regUrl;
+    this._headersAuth = options.headersAuth;
+    this._singIn = options.singInUrl;
+    this._checkToken = options.checkTokenUrl;
   }
 
   getCards() {
@@ -98,6 +102,43 @@ class Api {
       return res.json();
     }
     return Promise.reject(`Ошибка: ${res.status}`);
+  }
+
+  /*Auth block*/
+
+  register(email, password) {
+    return fetch(this._signUp, {
+      method: "POST",
+      headers: this._headersAuth,
+      body: JSON.stringify({
+        password: password,
+        email : email
+      })
+    })
+        .then(this._processResponse)
+  }
+
+  signIn(email, password) {
+    return fetch(this._singIn, {
+      method: "POST",
+      headers: this._headersAuth,
+      body: JSON.stringify({
+        password: password,
+        email : email
+      })
+    })
+        .then(this._processResponse)
+  }
+
+
+  checkToken(token) {
+    return fetch(this._checkToken, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization" : `Bearer ${token}`
+      }
+    })
+        .then(this._processResponse)
   }
 
 }

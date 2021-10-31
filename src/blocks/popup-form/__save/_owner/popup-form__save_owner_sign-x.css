@@ -1,0 +1,12 @@
+.popup-form__save_owner_sign-x {
+  margin: 178px 0 0 0;
+  background-color: #fff;
+  color: #000000;
+}
+
+@media screen and (max-width: 545px) {
+  .popup-form__save_owner_sign-x {
+    margin: 128px 0 0 0;
+
+  }
+}
