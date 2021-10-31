@@ -18,21 +18,23 @@ function Header(props) {
 
   /*с гамбургером по итогу какая то лютая жесть получилась, делал что мог, более менее работает ))*/
 
-  function handleResize() {
-    const windowsWidth = window.innerWidth
-    windowsWidth <= 550 ? setIsMenuVisible(false) : setIsMenuVisible(true)
-    windowsWidth <= 550 ? setIsHamburgerVisible(true) : setIsHamburgerVisible(false)
-    windowsWidth <= 550 && setIsHamburgerOpen(false)
-  }
+
   /*хз почему но window.addEventListener('resize', handleResize) не работает, долго сидел думал но ни до чего не додумался*/
   /*сделал по итогу через window.onresize оно почему-то работает*/
- window.onresize = handleResize;
+ /*window.onresize = handleResize;*/
+
+/*Спасибо заработало*/
 
  useEffect(() => {
-   const windowsWidth = window.innerWidth
-   windowsWidth <= 550 && setIsHamburgerOpen(false)
-   windowsWidth <= 550 ? setIsHamburgerVisible(true) : setIsHamburgerVisible(false)
-   windowsWidth <= 550 ? setIsMenuVisible(false) : setIsMenuVisible(true)
+   function handleResize() {
+     const windowsWidth = window.innerWidth
+     windowsWidth <= 550 && setIsHamburgerOpen(false)
+     windowsWidth <= 550 ? setIsHamburgerVisible(true) : setIsHamburgerVisible(false)
+     windowsWidth <= 550 ? setIsMenuVisible(false) : setIsMenuVisible(true)
+   }
+   handleResize()
+   window.addEventListener('resize', handleResize)
+   return () =>  window.removeEventListener('resize', handleResize)
  },[])
 
  return (

@@ -150,13 +150,14 @@ function App() {
           reset()
           processing(false);
           setIsSignXSuccessful(true)
-          setIsInfoTooltipOpen(true)
           history.push("sign-in")
         })
         .catch((err) => {
           console.log(err);
           processing(false);
           setIsSignXSuccessful(false)
+        })
+        .finally(() => {
           setIsInfoTooltipOpen(true)
         })
   }
